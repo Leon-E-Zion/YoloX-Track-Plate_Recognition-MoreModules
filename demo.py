@@ -46,7 +46,7 @@ class Leon_detect():
         self.get_clime = True
         # 是否已经发现嫌疑车辆
         self.tar_get = False
-        self.tar_car_nums = ['1111','2222']
+        self.tar_car_nums = ['726w','2222']
         # ----------------光照增强----------------
         self.light_improve = False
         # ----------------人流量与车流量----------------
@@ -60,6 +60,7 @@ class Leon_detect():
         self.csv_root_train = os.path.join(self.root, 'train.csv')
         self.csv_root_pre = os.path.join(self.root, 'pre.csv')
         self.pre_mes = []
+        self.predict_dis = 1000
     # =========================================================================|
     # =========================================================================|
     # |--|
@@ -162,10 +163,11 @@ class Leon_detect():
             # |机器学习预测|
             # ===========
             # 时间函数 --> 数据写入csv
+
             if self.machine_predict:
                 time_now = time.time()
                 time_distance = time_now - time_start
-                if time_distance >= self.passer_note_time:
+                if time_distance % self.passer_note_time == 0:
                     i_+=1
                     # 计算 单位时间内的总 流量
                     self.passer_num += result_['passer_num']
@@ -181,7 +183,7 @@ class Leon_detect():
                     self.pre_mes.append(mes)
                     data_noting(self.pre_mes, self.csv_root_train)
                     data_noting(pre_mes, self.csv_root_pre)
-                    if i_ % 10 == 0:
+                    if i_ % self.predict_dis == 0:
                         a = get_train_pre(self.csv_root_train, self.csv_root_pre)
                         print('Now Passer_Num is {}'.format(a))
             # ===============================================================================
@@ -190,7 +192,7 @@ class Leon_detect():
             # =============================================================================================================================================================
             # |获取 分析器 根据原图进行神经网络分析 得到的数据 进而 标注好的图片|
             # =======================================================
-            try : # 关于调试的时候 此处一定要修改
+            if 1 : # 关于调试的时候 此处一定要修改
                 # ==========================
                 result_ = det.feedCap(im)
                 # print(result_)
@@ -198,7 +200,7 @@ class Leon_detect():
                 # 处理好的图片
                 result = result_['frame']
                 # 所有目标的框格
-                tar_bboxes_mes = result_['bboxes_mes'] # 【[x1, y1, x2, y2,int(track_id),cls_,car_num]】
+                tar_bboxes_mes = result_['bboxes_mes'] # [[x1, y1, x2, y2,int(track_id),cls_,car_num],[x1, y1, x2, y2,int(track_id),cls_,car_num],[x1, y1, x2, y2,int(track_id),cls_,car_num]]
                 # 所有目标的 图片
                 tar_figures = result_['tar_figures'] # ([face, track_id],[face, track_id])
                 # ================================================各种函数功能==============================
@@ -261,8 +263,8 @@ class Leon_detect():
                 # |--|
                 # |--|
             # ======================
-            except:
-                result = im
+            # except:
+            #     result = im
             # ======================
             # |--|
             # |--|
@@ -276,13 +278,13 @@ class Leon_detect():
                 videoWriter = cv2.VideoWriter(
                     'result.mp4', fourcc, fps, (result.shape[1], result.shape[0]))
             videoWriter.write(result)
-            # 关于处理好的图片的可视化
-            cv2.imshow(name, result)
-            cv2.waitKey(t)
-            # 设置退出 展示 退出 处理的按钮  ==> 点 "x"  退出
-            if cv2.getWindowProperty(name, cv2.WND_PROP_AUTOSIZE) < 1:
-                # 点x退出
-                break
+            # # 关于处理好的图片的可视化
+            # cv2.imshow(name, result)
+            # cv2.waitKey(t)
+            # # 设置退出 展示 退出 处理的按钮  ==> 点 "x"  退出
+            # if cv2.getWindowProperty(name, cv2.WND_PROP_AUTOSIZE) < 1:
+            #     # 点x退出
+            #     break
             # =======================================================================
             # |--|
             # |--|
@@ -296,4 +298,6 @@ class Leon_detect():
 
 if __name__ == '__main__':
     a = Leon_detect()
+    s = time.time()
     a.main()
+    print(time.time()-s)

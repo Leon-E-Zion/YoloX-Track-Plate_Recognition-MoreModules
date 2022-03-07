@@ -39,7 +39,7 @@ class Detector(baseDet):
         self.build_config()
         self.mdepth = 0.33
         self.mwidth = 0.50
-        self.confthre=0.6
+        self.confthre=0.4
         self.nmsthre=0.1
         self.test_size=(640,640)
         self.rgb_means = (0.485, 0.456, 0.406)
