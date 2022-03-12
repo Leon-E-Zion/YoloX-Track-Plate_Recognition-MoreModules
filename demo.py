@@ -32,7 +32,7 @@ class Leon_detect():
         # |图像分析的函数的一些参数|
         # =====================
         # -----------------过往流量记录 时间间隔  单位 s----------------
-        self.passer_note_time = 10
+        self.passer_note_time = 1000
         # ----------------保存的图像的大小尺寸----------------
         self.height = 500
         # ----------------测速函数----------------
@@ -192,7 +192,7 @@ class Leon_detect():
             # =============================================================================================================================================================
             # |获取 分析器 根据原图进行神经网络分析 得到的数据 进而 标注好的图片|
             # =======================================================
-            if 1 : # 关于调试的时候 此处一定要修改
+            try: # 关于调试的时候 此处一定要修改
                 # ==========================
                 result_ = det.feedCap(im)
                 # print(result_)
@@ -263,8 +263,8 @@ class Leon_detect():
                 # |--|
                 # |--|
             # ======================
-            # except:
-            #     result = im
+            except:
+                result = im
             # ======================
             # |--|
             # |--|
@@ -278,13 +278,13 @@ class Leon_detect():
                 videoWriter = cv2.VideoWriter(
                     'result.mp4', fourcc, fps, (result.shape[1], result.shape[0]))
             videoWriter.write(result)
-            # # 关于处理好的图片的可视化
-            # cv2.imshow(name, result)
-            # cv2.waitKey(t)
-            # # 设置退出 展示 退出 处理的按钮  ==> 点 "x"  退出
-            # if cv2.getWindowProperty(name, cv2.WND_PROP_AUTOSIZE) < 1:
-            #     # 点x退出
-            #     break
+            # 关于处理好的图片的可视化
+            cv2.imshow(name, result)
+            cv2.waitKey(t)
+            # 设置退出 展示 退出 处理的按钮  ==> 点 "x"  退出
+            if cv2.getWindowProperty(name, cv2.WND_PROP_AUTOSIZE) < 1:
+                # 点x退出
+                break
             # =======================================================================
             # |--|
             # |--|
